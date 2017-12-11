@@ -14,22 +14,32 @@ long Expo(long a, long n) {
 Fraccion::Fraccion() : num(0), den(1) {}
 
 Fraccion::Fraccion(std::string cad) {
-    int tam   = cad.size();
-    int punto = cad.find(".");
-    Fraccion ans(stol(cad.substr(0, punto)), 1);
+    int idx_division = cad.find("/");
+    int idx_decimal  = cad.find(".");
 
-    int cycle = cad.find("(");
-    int  L = (cycle < 0 ? tam : cycle) - punto - 1;
-    long n = (L > 0 ? stol(cad.substr(punto + 1, L)) : 0);
-    ans    = ans + Fraccion(n, Expo(10, L));
+    if (idx_decimal > 0) {
+        int tam   = cad.size();
+        int punto = cad.find(".");
+        Fraccion ans(stol(cad.substr(0, punto)), 1);
 
-    int offset = L;
-    L   = tam - cycle - 2;
-    n   = (cycle > 0 ? stol(cad.substr(cycle + 1, L)) : 0);
-    ans = ans + Fraccion(n, stol(std::string(L, '9')) * Expo(10, offset));
+        int cycle = cad.find("(");
+        int  L = (cycle < 0 ? tam : cycle) - punto - 1;
+        long n = (L > 0 ? stol(cad.substr(punto + 1, L)) : 0);
+        ans    = ans + Fraccion(n, Expo(10, L));
 
-    num = ans.num;
-    den = ans.den;
+        int offset = L;
+        L   = tam - cycle - 2;
+        n   = (cycle > 0 ? stol(cad.substr(cycle + 1, L)) : 0);
+        ans = ans + Fraccion(n, stol(std::string(L, '9')) * Expo(10, offset));
+
+        num = ans.num;
+        den = ans.den;
+    } else {
+        num = std::stol(cad.substr(0, idx_division));
+        den = 1;
+        if (idx_division > 0)
+            den = std::stol(cad.substr(idx_division + 1, cad.size() - idx_division - 1));
+    }
 }
 
 Fraccion::Fraccion(long n, long d) {

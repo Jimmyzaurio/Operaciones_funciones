@@ -11,13 +11,15 @@ private:
 
 public:
     Funcion();
-    Funcion(std::string &data);
+    Funcion(std::string&, int);
     std::vector<Fraccion> get_muestras();
+    int get_origen();
     void diezmar(int k);
     void interpolar_Cero(int k);
     void interpolar_Lineal(int k);
     void interpolar_Escalon(int k);
     void desplazar(int k);
+    void reflejar();
 
     Funcion operator-() const;
     Funcion operator+(const Funcion& f);

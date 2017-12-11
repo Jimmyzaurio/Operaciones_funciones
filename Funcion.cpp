@@ -2,41 +2,30 @@
 
 Funcion::Funcion() {}
 
-Funcion::Funcion(std::string &data) {
-    std::istringstream ss(data);
+Funcion::Funcion(std::string &data, int centro) : origen(centro) {
+    std::stringstream ss(data);
     std::string token;
 
     while (std::getline(ss, token, ',')) {
         // PONER VALIDACION DE BASURA
-        int idx_division = token.find("/");
-        int idx_decimal  = token.find(".");
-
-        if (idx_decimal > 0) {
-            Fraccion val(token);
-            muestras.push_back(val);
-            //std::cout << val.num << '/' << val.den << std::endl;
-        } else {
-            long num = std::stol(token.substr(0, idx_division));
-            long den = 1;
-            if (idx_division > 0)
-                den = std::stol(token.substr(idx_division + 1, token.size() - idx_division - 1));
-            
-            Fraccion val(num, den);
-            muestras.push_back(val);
-            //std::cout << val.num << '/' << val.den << std::endl;
-        }
+        muestras.push_back(Fraccion(token));
     }
 }
 
 std::vector<Fraccion> Funcion::get_muestras() { return muestras; }
 
+int Funcion::get_origen() { return origen; }
+
 void Funcion::diezmar(int k) {
+    if (k < 2) return;
+
     int ini = origen;
     while (ini - k >= 0) 
         ini -= k;
     
     int idx = 0;
     while (ini < muestras.size()) {
+        if (ini == origen) origen = idx;
         muestras[idx++] = muestras[ini];
         ini += k;
     }
@@ -45,11 +34,14 @@ void Funcion::diezmar(int k) {
 }
 
 void Funcion::interpolar_Cero(int k) {
+    origen = k * origen;
+    
     std::vector<Fraccion> temp;
-
     for (int i = 0; i < muestras.size() - 1; ++i) {
         temp.push_back(muestras[i]);
-        temp.push_back(Fraccion());
+
+        for (int j = 1; j < k; ++j)
+            temp.push_back(Fraccion());
     }
 
     temp.push_back(muestras.back());
@@ -57,11 +49,14 @@ void Funcion::interpolar_Cero(int k) {
 }
 
 void Funcion::interpolar_Escalon(int k) {
-    std::vector<Fraccion> temp;
+    origen = k * origen;
 
+    std::vector<Fraccion> temp;
     for (int i = 0; i < muestras.size() - 1; ++i) {
         temp.push_back(muestras[i]);
-        temp.push_back(muestras[i]);
+
+        for (int j = 1; j < k; ++j)
+            temp.push_back(muestras[i]);
     }
 
     temp.push_back(muestras.back());
@@ -69,13 +64,16 @@ void Funcion::interpolar_Escalon(int k) {
 }
 
 void Funcion::interpolar_Lineal(int k) {
-    std::vector<Fraccion> temp;
+    if (k < 2) return;
+    origen = k * origen;
 
+    std::vector<Fraccion> temp;
     for (int i = 0; i < muestras.size() - 1; ++i) {
         temp.push_back(muestras[i]);
 
-        Fraccion promedio = muestras[i + 1] / muestras[i];
-        temp.push_back(muestras[i] + promedio);
+        Fraccion promedio = (muestras[i + 1] - muestras[i]) / Fraccion(k, 1);
+        for (int j = 1; j < k; ++j)
+            temp.push_back(muestras[i] + Fraccion(j, 1) * promedio);
     }
 
     temp.push_back(muestras.back());
@@ -92,6 +90,11 @@ void Funcion::desplazar(int k) {
     }
 
     origen += k;
+}
+
+void Funcion::reflejar() {
+    reverse(muestras.begin(), muestras.end());
+    origen = muestras.size() - origen - 1;
 }
 
 Funcion Funcion::operator-() const {
