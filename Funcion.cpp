@@ -93,7 +93,7 @@ void Funcion::desplazar(int k) {
 }
 
 void Funcion::reflejar() {
-    reverse(muestras.begin(), muestras.end());
+    std::reverse(muestras.begin(), muestras.end());
     origen = muestras.size() - origen - 1;
 }
 

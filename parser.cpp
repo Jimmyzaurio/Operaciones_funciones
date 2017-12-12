@@ -9,8 +9,7 @@ void print(Funcion &info) {
         std::cout << ' ';
     }
 
-    std::cout << std::endl;
-    std::cout << info.get_origen() << std::endl;
+    std::cout << "      " << info.get_origen() << std::endl;
 }
 
 void modifica(std::string &operaciones, Funcion &f) {
@@ -52,9 +51,24 @@ int main() {
     //std::string muestras = "-23, 0.5, 5/7, -4/1, 45";
     std::string muestras = "-3, 0.5, 0.75, 3/2, -1, 11, 4, 2, 10";
 
-    Funcion info(muestras, 2);
-    modifica(operaciones, info);
-    print(info);
+    std::string A = "1, 2, 3, 4";
+    std::string B = "5, 6, 7, 8, 9, 10, 11";
+    
+    Funcion f(A, 0);
+    Funcion g(B, 5);
+    
+    print(f);
+    print(g);
+    
+    Funcion res = f + g;
+    print(res);
+
+    res = f - g;
+    print(res);
+
+    res = f * g;
+    print(res);
+
     return 0;
 }
 
